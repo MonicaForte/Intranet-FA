@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intranet Fundação Araucária</title>
+    <link rel="icon" href="./assets/imagens/araucariaIcon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar-collapsed {
+            width: 70px;
+        }
+        .sidebar-collapsed .menu-text {
+            display: none;
+        }
+        .sidebar-collapsed .logo-text {
+            display: none;
+        }
+        .sidebar-collapsed .user-info {
+            display: none;
+        }
+        .main-content-expanded {
+            margin-left: 250px;
+        }
+        .main-content-collapsed {
+            margin-left: 70px;
+        }
+        .calendar-day:hover {
+            background-color: #e2e8f0;
+            cursor: pointer;
+        }
+        .calendar-day.today {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+        }
+        .calendar-day.event-day {
+            background-color: #f0f9ff;
+            position: relative;
+        }
+        .calendar-day.event-day::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+        }
+        .login-container {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+        .login-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .contact-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .birthday-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Login Page (Initially visible) -->
+    <div id="login-page" class="flex items-center justify-center min-h-screen login-container">
+        <div class="login-card bg-white rounded-lg p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="assets/imagens/logoAraucaria.png" alt="Company Logo" class="mx-auto mb-4 rounded-full">
+                <h1 class="text-2xl font-bold text-gray-800">Intranet Corporativa</h1>
+                <p class="text-gray-600">Faça login para acessar o sistema</p>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 mb-2">Usuário</label>
+                    <input type="text" id="username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite seu usuário">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 mb-2">Senha</label>
+                    <input type="password" id="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite sua senha">
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" id="remember" class="mr-2">
+                    <label for="remember" class="text-gray-700">Lembrar de mim</label>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Entrar</button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="#" class="text-blue-600 hover:underline">Esqueceu sua senha?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App (Initially hidden) -->
+    <div id="app-container" class="hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-blue-800 text-white transition-all duration-300 ease-in-out z-50">
+            <div class="p-4 flex items-center justify-between border-b border-blue-700">
+                <div class="flex items-center">
+                    <img src="https://via.placeholder.com/40" alt="Logo" class="rounded-full mr-3">
+                    <span class="logo-text font-bold text-xl">Intranet</span>
+                </div>
+                <button id="toggle-sidebar" class="text-white focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="p-4 border-b border-blue-700 user-info">
+                <div class="flex items-center">
+                    <img src="https://via.placeholder.com/50" alt="User" class="rounded-full mr-3">
+                    <div>
+                        <p class="font-semibold">João Silva</p>
+                        <p class="text-blue-200 text-sm">Administrador</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="mt-4">
+                <ul>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item active" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item" data-page="calendar">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span class="menu-text">Calendário</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item" data-page="contacts">
+                            <i class="fas fa-address-book mr-3"></i>
+                            <span class="menu-text">Contatos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item" data-page="birthdays">
+                            <i class="fas fa-birthday-cake mr-3"></i>
+                            <span class="menu-text">Aniversariantes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item" data-page="documents">
+                            <i class="fas fa-file-alt mr-3"></i>
+                            <span class="menu-text">Documentos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 menu-item" data-page="messages">
+                            <i class="fas fa-envelope mr-3"></i>
+                            <span class="menu-text">Mensagens</span>
+                            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full menu-text">3</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="absolute bottom-0 w-full p-4 border-t border-blue-700">
+                <a href="#" class="flex items-center text-blue-100 hover:text-white menu-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span class="menu-text">Sair</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="main-content-expanded min-h-screen transition-all duration-300 ease-in-out">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold text-gray-800" id="page-title">Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-600 focus:outline-none">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-600 focus:outline-none">
+                                <i class="fas fa-envelope text-xl"></i>
+                                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-600 focus:outline-none">
+                                <i class="fas fa-cog text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="p-6">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                                    <i class="fas fa-users text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Total de Colaboradores</p>
+                                    <h3 class="text-2xl font-bold">142</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                                    <i class="fas fa-calendar-check text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Eventos Hoje</p>
+                                    <h3 class="text-2xl font-bold">3</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                                    <i class="fas fa-birthday-cake text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Aniversariantes</p>
+                                    <h3 class="text-2xl font-bold">2</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                                    <i class="fas fa-file-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Novos Documentos</p>
+                                    <h3 class="text-2xl font-bold">5</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Calendar Widget -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Calendário</h2>
+                                <a href="#" class="text-blue-600 text-sm" data-page="calendar">Ver tudo</a>
+                            </div>
+                            <div id="mini-calendar" class="mb-4">
+                                <!-- Mini calendar will be inserted here by JS -->
+                            </div>
+                            <div>
+                                <h3 class="font-medium mb-2">Próximos Eventos</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                        <span class="text-sm">10:00 - Reunião de equipe</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                        <span class="text-sm">14:30 - Apresentação de resultados</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                        <span class="text-sm">16:00 - Treinamento de segurança</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Birthdays Widget -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Aniversariantes</h2>
+                                <a href="#" class="text-blue-600 text-sm" data-page="birthdays">Ver todos</a>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/50" alt="User" class="rounded-full mr-3">
+                                    <div>
+                                        <p class="font-medium">Ana Carolina</p>
+                                        <p class="text-sm text-gray-600">Departamento Financeiro</p>
+                                    </div>
+                                    <div class="ml-auto birthday-card px-3 py-1 rounded-full">
+                                        <span class="text-sm font-medium">Hoje</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/50" alt="User" class="rounded-full mr-3">
+                                    <div>
+                                        <p class="font-medium">Carlos Eduardo</p>
+                                        <p class="text-sm text-gray-600">TI</p>
+                                    </div>
+                                    <div class="ml-auto px-3 py-1 rounded-full bg-gray-100">
+                                        <span class="text-sm font-medium">Amanhã</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/50" alt="User" class="rounded-full mr-3">
+                                    <div>
+                                        <p class="font-medium">Mariana Silva</p>
+                                        <p class="text-sm text-gray-600">Marketing</p>
+                                    </div>
+                                    <div class="ml-auto px-3 py-1 rounded-full bg-gray-100">
+                                        <span class="text-sm font-medium">15/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-lg font-semibold mb-4">Links Rápidos</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#" class="p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition flex flex-col items-center">
+                                    <i class="fas fa-file-pdf text-red-500 text-2xl mb-2"></i>
+                                    <span class="text-sm text-center">Manual do Colaborador</span>
+                                </a>
+                                <a href="#" class="p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition flex flex-col items-center">
+                                    <i class="fas fa-calendar-alt text-blue-500 text-2xl mb-2"></i>
+                                    <span class="text-sm text-center">Férias</span>
+                                </a>
+                                <a href="#" class="p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition flex flex-col items-center">
+                                    <i class="fas fa-chart-line text-green-500 text-2xl mb-2"></i>
+                                    <span class="text-sm text-center">Indicadores</span>
+                                </a>
+                                <a href="#" class="p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition flex flex-col items-center">
+                                    <i class="fas fa-question-circle text-yellow-500 text-2xl mb-2"></i>
+                                    <span class="text-sm text-center">Suporte</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-lg font-semibold mb-4">Últimas Notícias</h2>
+                        <div class="space-y-4">
+                            <div class="border-b pb-4">
+                                <h3 class="font-medium text-blue-600">Novo sistema de ponto eletrônico</h3>
+                                <p class="text-sm text-gray-600 mb-2">Publicado em 01/06/2023</p>
+                                <p class="text-gray-700">A partir do próximo mês, estaremos implementando um novo sistema de registro de ponto eletrônico com reconhecimento facial.</p>
+                            </div>
+                            <div class="border-b pb-4">
+                                <h3 class="font-medium text-blue-600">Atualização da política de home office</h3>
+                                <p class="text-sm text-gray-600 mb-2">Publicado em 25/05/2023</p>
+                                <p class="text-gray-700">Foram atualizadas as diretrizes para trabalho remoto. Todos os colaboradores devem revisar as novas regras no manual.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-blue-600">Evento beneficente da empresa</h3>
+                                <p class="text-sm text-gray-600 mb-2">Publicado em 20/05/2023</p>
+                                <p class="text-gray-700">No próximo sábado, realizaremos nosso evento anual de arrecadação de alimentos. Participe e traga sua família!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Page -->
+                <div id="calendar-page" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Calendário</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Hoje</button>
+                            <div class="relative">
+                                <button id="calendar-view-btn" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 flex items-center">
+                                    <span>Mês</span>
+                                    <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                                </button>
+                                <div id="calendar-view-dropdown" class="absolute right-0 mt-1 w-32 bg-white shadow-lg rounded-lg py-1 z-10 hidden">
+                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100" data-view="day">Dia</a>
+                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100" data-view="week">Semana</a>
+                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100" data-view="month">Mês</a>
+                                </div>
+                            </div>
+                            <button class="p-2 bg-white border rounded-lg hover:bg-gray-50">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div id="full-calendar" class="p-4">
+                            <!-- Calendar will be inserted here by JS -->
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-white rounded-lg shadow p-6">
+                        <h3 class="font-semibold mb-4">Próximos Eventos</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 text-blue-800 p-2 rounded-lg mr-4">
+                                    <div class="text-center">
+                                        <div class="font-bold">10</div>
+                                        <div class="text-xs">JUN</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Reunião de equipe</h4>
+                                    <p class="text-sm text-gray-600">10:00 - 11:30 • Sala de Reuniões 3</p>
+                                    <p class="text-sm mt-1">Revisão dos indicadores do trimestre e planejamento das próximas ações.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-green-100 text-green-800 p-2 rounded-lg mr-4">
+                                    <div class="text-center">
+                                        <div class="font-bold">12</div>
+                                        <div class="text-xs">JUN</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Treinamento de Segurança</h4>
+                                    <p class="text-sm text-gray-600">14:00 - 16:00 • Auditório</p>
+                                    <p class="text-sm mt-1">Todos os colaboradores devem participar do treinamento anual de segurança no trabalho.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 text-purple-800 p-2 rounded-lg mr-4">
+                                    <div class="text-center">
+                                        <div class="font-bold">15</div>
+                                        <div class="text-xs">JUN</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Happy Hour de Aniversariantes</h4>
+                                    <p class="text-sm text-gray-600">17:30 - 19:30 • Área de Convivência</p>
+                                    <p class="text-sm mt-1">Celebração dos aniversariantes do mês. Traga seu prato ou bebida favorita para compartilhar!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contacts Page -->
+                <div id="contacts-page" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Contatos</h2>
+                        <div class="flex space-x-2">
+                            <div class="relative">
+                                <input type="text" placeholder="Buscar contato..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                <span>Adicionar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="grid grid-cols-12 bg-gray-100 p-4 font-medium text-gray-700">
+                            <div class="col-span-4">Nome</div>
+                            <div class="col-span-3">Departamento</div>
+                            <div class="col-span-3">Cargo</div>
+                            <div class="col-span-2">Ramal</div>
+                        </div>
+                        <div id="contacts-list" class="divide-y">
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Ana Carolina Silva</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">Financeiro</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Gerente Financeira</div>
+                                <div class="col-span-2 flex items-center text-gray-600">2105</div>
+                            </div>
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Carlos Eduardo Mendes</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">TI</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Analista de Sistemas</div>
+                                <div class="col-span-2 flex items-center text-gray-600">3102</div>
+                            </div>
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Mariana Oliveira</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">Marketing</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Coordenadora</div>
+                                <div class="col-span-2 flex items-center text-gray-600">4108</div>
+                            </div>
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Ricardo Almeida</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">RH</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Gerente de RH</div>
+                                <div class="col-span-2 flex items-center text-gray-600">1103</div>
+                            </div>
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Fernanda Costa</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">Comercial</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Vendedora Sênior</div>
+                                <div class="col-span-2 flex items-center text-gray-600">5107</div>
+                            </div>
+                            <div class="grid grid-cols-12 p-4 hover:bg-gray-50 contact-card transition">
+                                <div class="col-span-4 flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                    <span>Lucas Pereira</span>
+                                </div>
+                                <div class="col-span-3 flex items-center text-gray-600">Operações</div>
+                                <div class="col-span-3 flex items-center text-gray-600">Supervisor</div>
+                                <div class="col-span-2 flex items-center text-gray-600">2209</div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Mostrando 6 de 142 contatos</span>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border rounded-lg hover:bg-gray-50">&lt;</button>
+                                <button class="px-3 py-1 border rounded-lg bg-blue-600 text-white">1</button>
+                                <button class="px-3 py-1 border rounded-lg hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border rounded-lg hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border rounded-lg hover:bg-gray-50">&gt;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Birthdays Page -->
+                <div id="birthdays-page" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Aniversariantes</h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <select class="appearance-none pl-3 pr-8 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Junho 2023</option>
+                                    <option>Julho 2023</option>
+                                    <option>Agosto 2023</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                            </div>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span>Enviar Parabéns</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="birthday-card rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Ana Carolina</h3>
+                                    <p class="text-gray-600">Departamento Financeiro</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium">Hoje • 10/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-white rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-white rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Carlos Eduardo</h3>
+                                    <p class="text-gray-600">TI</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">Amanhã • 11/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Mariana Silva</h3>
+                                    <p class="text-gray-600">Marketing</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">15/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Ricardo Almeida</h3>
+                                    <p class="text-gray-600">RH</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">18/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Fernanda Costa</h3>
+                                    <p class="text-gray-600">Comercial</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">22/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/80" alt="User" class="rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-xl">Lucas Pereira</h3>
+                                    <p class="text-gray-600">Operações</p>
+                                    <div class="mt-2">
+                                        <span class="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">30/06</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Mensagem</span>
+                                </button>
+                                <button class="flex-1 py-2 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    <span>Presente</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Page -->
+                <div id="documents-page" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Documentos</h2>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            <span>Upload</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">Todos</button>
+                                <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Compartilhados</button>
+                                <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Meus</button>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="p-2 bg-white border rounded-lg hover:bg-gray-50">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                                <button class="p-2 bg-white border rounded-lg hover:bg-gray-50">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="border rounded-lg p-4 hover:shadow-md transition">
+                                <div class="flex justify-between items-start mb-3">
+                                    <i class="fas fa-file-pdf text-red-500 text-3xl"></i>
+                                    <div class="text-xs bg-gray-100 px-2 py-1 rounded">PDF</div>
+                                </div>
+                                <h3 class="font-medium mb-1">Manual do Colaborador</h3>
+                                <p class="text-sm text-gray-600 mb-3">Atualizado em 15/05/2023</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">2.4 MB</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 hover:shadow-md transition">
+                                <div class="flex justify-between items-start mb-3">
+                                    <i class="fas fa-file-excel text-green-500 text-3xl"></i>
+                                    <div class="text-xs bg-gray-100 px-2 py-1 rounded">XLSX</div>
+                                </div>
+                                <h3 class="font-medium mb-1">Planilha de Despesas</h3>
+                                <p class="text-sm text-gray-600 mb-3">Atualizado em 10/05/2023</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">1.2 MB</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 hover:shadow-md transition">
+                                <div class="flex justify-between items-start mb-3">
+                                    <i class="fas fa-file-word text-blue-500 text-3xl"></i>
+                                    <div class="text-xs bg-gray-100 px-2 py-1 rounded">DOCX</div>
+                                </div>
+                                <h3 class="font-medium mb-1">Modelo de Contrato</h3>
+                                <p class="text-sm text-gray-600 mb-3">Atualizado em 05/05/2023</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">850 KB</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 hover:shadow-md transition">
+                                <div class="flex justify-between items-start mb-3">
+                                    <i class="fas fa-file-powerpoint text-orange-500 text-3xl"></i>
+                                    <div class="text-xs bg-gray-100 px-2 py-1 rounded">PPTX</div>
+                                </div>
+                                <h3 class="font-medium mb-1">Apresentação Institucional</h3>
+                                <p class="text-sm text-gray-600 mb-3">Atualizado em 01/05/2023</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">3.7 MB</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Page -->
+                <div id="messages-page" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Mensagens</h2>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            <span>Nova Mensagem</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-4">
+                            <!-- Message List -->
+                            <div class="lg:col-span-1 border-r">
+                                <div class="p-4 border-b">
+                                    <div class="relative">
+                                        <input type="text" placeholder="Buscar mensagens..." class="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <div class="divide-y">
+                                    <div class="p-4 hover:bg-gray-50 cursor-pointer border-l-4 border-blue-600 bg-blue-50">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h3 class="font-medium">Ana Carolina</h3>
+                                            <span class="text-xs text-gray-500">10:30</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">Sobre o relatório mensal que precisamos entregar até...</p>
+                                    </div>
+                                    <div class="p-4 hover:bg-gray-50 cursor-pointer">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h3 class="font-medium">Carlos Eduardo</h3>
+                                            <span class="text-xs text-gray-500">Ontem</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">O sistema de ponto eletrônico está com problemas...</p>
+                                    </div>
+                                    <div class="p-4 hover:bg-gray-50 cursor-pointer">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h3 class="font-medium">Recursos Humanos</h3>
+                                            <span class="text-xs text-gray-500">Seg</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">Lembrete: Treinamento de segurança obrigatório na...</p>
+                                    </div>
+                                    <div class="p-4 hover:bg-gray-50 cursor-pointer">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h3 class="font-medium">Mariana Silva</h3>
+                                            <span class="text-xs text-gray-500">Sex</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">Precisamos alinhar sobre o lançamento da nova campanha...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Message Content -->
+                            <div class="lg:col-span-3">
+                                <div class="p-4 border-b flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="https://via.placeholder.com/40" alt="User" class="rounded-full mr-3">
+                                        <div>
+                                            <h3 class="font-medium">Ana Carolina</h3>
+                                            <p class="text-sm text-gray-600">Gerente Financeira</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                                            <i class="fas fa-reply"></i>
+                                        </button>
+                                        <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="mb-6">
+                                        <h3 class="font-bold text-lg mb-2">Relatório Mensal</h3>
+                                        <p class="text-sm text-gray-500 mb-4">10 de Junho de 2023 10:30</p>
+                                        <div class="prose max-w-none">
+                                            <p>Olá João,</p>
+                                            <p>Espero que você esteja bem. Estou entrando em contato sobre o relatório mensal que precisamos entregar até a próxima sexta-feira.</p>
+                                            <p>Você poderia verificar se todos os dados do seu departamento já foram consolidados? Precisamos incluir essas informações no documento final.</p>
+                                            <p>Por favor, me avise se houver qualquer problema ou se precisar de mais tempo.</p>
+                                            <p>Atenciosamente,<br>Ana Carolina</p>
+                                        </div>
+                                    </div>
+                                    <div class="border-t pt-6">
+                                        <h4 class="font-medium mb-4">Anexos</h4>
+                                        <div class="flex space-x-4">
+                                            <div class="border rounded-lg p-3 flex items-center">
+                                                <i class="fas fa-file-excel text-green-500 text-2xl mr-3"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium">Dados_Consolidados.xlsx</p>
+                                                    <p class="text-xs text-gray-500">1.2 MB</p>
+                                                </div>
+                                                <button class="ml-4 text-blue-600">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 border-t">
+                                    <form>
+                                        <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3" rows="3" placeholder="Digite sua resposta..."></textarea>
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex space-x-2">
+                                                <button type="button" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                                                    <i class="fas fa-paperclip"></i>
+                                                </button>
+                                            </div>
+                                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enviar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Login functionality
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+        });
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+        });
+
+        // Toggle sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            sidebar.classList.toggle('sidebar-collapsed');
+            
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                mainContent.classList.remove('main-content-expanded');
+                mainContent.classList.add('main-content-collapsed');
+            } else {
+                mainContent.classList.remove('main-content-collapsed');
+                mainContent.classList.add('main-content-expanded');
+            }
+        });
+
+        // Page navigation
+        const menuItems = document.querySelectorAll('.menu-item');
+        const pageContents = document.querySelectorAll('.page-content');
+        const pageTitle = document.getElementById('page-title');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all menu items
+                menuItems.forEach(i => i.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all page contents
+                pageContents.forEach(content => content.classList.add('hidden'));
+                
+                // Show selected page
+                const page = this.getAttribute('data-page');
+                document.getElementById(`${page}-page`).classList.remove('hidden');
+                
+                // Update page title
+                const titleText = this.querySelector('.menu-text').textContent;
+                pageTitle.textContent = titleText;
+            });
+        });
+
+        // Calendar view dropdown
+        const calendarViewBtn = document.getElementById('calendar-view-btn');
+        const calendarViewDropdown = document.getElementById('calendar-view-dropdown');
+
+        calendarViewBtn.addEventListener('click', function() {
+            calendarViewDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!calendarViewBtn.contains(e.target) && !calendarViewDropdown.contains(e.target)) {
+                calendarViewDropdown.classList.add('hidden');
+            }
+        });
+
+        // Generate mini calendar
+        function generateMiniCalendar() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const currentDay = today.getDate();
+
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+
+            let calendarHTML = `
+                <div class="text-center mb-2">
+                    <span class="font-medium">${['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'][currentMonth]} ${currentYear}</span>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-xs text-center">
+                    <div class="font-medium">D</div>
+                    <div class="font-medium">S</div>
+                    <div class="font-medium">T</div>
+                    <div class="font-medium">Q</div>
+                    <div class="font-medium">Q</div>
+                    <div class="font-medium">S</div>
+                    <div class="font-medium">S</div>
+            `;
+
+            let day = 1;
+            for (let i = 0; i < 6; i++) {
+                if (day > daysInMonth) break;
+                
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < startingDay) {
+                        calendarHTML += `<div class="h-6"></div>`;
+                    } else if (day > daysInMonth) {
+                        calendarHTML += `<div class="h-6"></div>`;
+                    } else {
+                        const dayClass = day === currentDay ? 'calendar-day today' : 'calendar-day';
+                        calendarHTML += `<div class="${dayClass} py-1 rounded-full">${day}</div>`;
+                        day++;
+                    }
+                }
+            }
+
+            calendarHTML += `</div>`;
+            document.getElementById('mini-calendar').innerHTML = calendarHTML;
+        }
+
+        // Generate full calendar
+        function generateFullCalendar() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const currentDay = today.getDate();
+
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+
+            let calendarHTML = `
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">${['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'][currentMonth]} ${currentYear}</h3>
+                </div>
+                <div class="grid grid-cols-7 gap-1">
+                    <div class="font-medium text-center p-2">Dom</div>
+                    <div class="font-medium text-center p-2">Seg</div>
+                    <div class="font-medium text-center p-2">Ter</div>
+                    <div class="font-medium text-center p-2">Qua</div>
+                    <div class="font-medium text-center p-2">Qui</div>
+                    <div class="font-medium text-center p-2">Sex</div>
+                    <div class="font-medium text-center p-2">Sáb</div>
+            `;
+
+            let day = 1;
+            for (let i = 0; i < 6; i++) {
+                if (day > daysInMonth) break;
+                
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < startingDay) {
+                        calendarHTML += `<div class="h-24 border p-1"></div>`;
+                    } else if (day > daysInMonth) {
+                        calendarHTML += `<div class="h-24 border p-1"></div>`;
+                    } else {
+                        const dayClass = day === currentDay ? 'calendar-day today' : 'calendar-day';
+                        // Add event-day class to some days for demo
+                        const hasEvent = (day === 10 || day === 12 || day === 15 || day === 20);
+                        const finalClass = hasEvent ? `${dayClass} event-day` : dayClass;
+                        
+                        calendarHTML += `
+                            <div class="${finalClass} h-24 border p-1">
+                                <div class="text-right">${day}</div>
+                                ${hasEvent ? `<div class="text-xs mt-1 p-1 bg-blue-100 rounded">Evento</div>` : ''}
+                            </div>
+                        `;
+                        day++;
+                    }
+                }
+            }
+
+            calendarHTML += `</div>`;
+            document.getElementById('full-calendar').innerHTML = calendarHTML;
+        }
+
+        // Initialize calendars
+        generateMiniCalendar();
+        generateFullCalendar();
+    </script>
+</body>
+</html>
